@@ -10,43 +10,50 @@ const ConflictError = require('../errors/conflict-error');
 const User = require('../models/user');
 
 module.exports.getUsers = (req, res, next) => {
-  User.find({})
-    .then((users) => {
-      res.send({ data: users });
-    })
-    .catch(next);
-};
-module.exports.findUser = (req, res, next) => {
-  const { userId } = req.params;
-  User.findById(userId)
-    .orFail(new NotFoundError('Пользователь с указанным _id не найден.'))
+  User.findById(req.user._id)
     .then((user) => {
-      res.status(200).send({ data: user });
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
+      } else {
+        res.status(200).send(user);
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new BadRequestError('Ошибка сервера');
+      }
+      return next(err);
     })
     .catch(next);
 };
 module.exports.createUser = (req, res, next) => {
   const {
-    name, about, avatar, email, password,
+    email, password, name,
   } = req.body;
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    }))
-    .then(() => res.status(200).send({
-      data: {
-        name, about, avatar, email,
-      },
-    }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при создании пользователя');
-      } else if (err.name === 'MongoError') {
-        throw new ConflictError('Ошибка базы данных');
-      } else {
-        next(err);
+
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        throw new ConflictError('Такой пользователь уже создан');
       }
+      return bcrypt.hash(password, 10);
     })
+    .then((hash) => User.create({
+      email, password: hash, name,
+    })
+      .then((user) => res.status(200).send({
+        user: {
+          email: user.email,
+          name: user.name,
+          _id: user._id,
+        },
+      }))
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          throw new BadRequestError('Ошибка сервера');
+        }
+        return next(err);
+      }))
     .catch(next);
 };
 module.exports.login = (req, res, next) => {
@@ -60,37 +67,17 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 module.exports.updateProfile = (req, res, next) => {
-  const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+  const { name, email } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
     .orFail(new NotFoundError('Нет такого пользователя'))
     .then((user) => {
       res.status(200).send({ user });
     })
     .catch((err) => {
-      if (!name || !about) {
+      if (!name || !email) {
         return next(new BadRequestError('Вы не правильно заполнили обязательные поля'));
       }
       return next(err);
     });
 };
-module.exports.updateAvatar = (req, res, next) => {
-  const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .then((user) => {
-      res.status(200).send({ user });
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Вы не правильно заполнили обязательные поля'));
-      }
-      return next(err);
-    });
-};
-module.exports.getInfoProfile = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail(new NotFoundError('Пользователь с указанным _id не найден.'))
-    .then((user) => {
-      res.status(200).send({ name: user.name, about: user.about });
-    })
-    .catch(next);
-};
+

@@ -44,16 +44,16 @@ const Movies = new Schema({
       message: 'Неправильный формат ссылки',
     },
   },
-  owner: [{
+  owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    default: [],
-  }],
-  movieId : [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    default: [],
-  }],
+    ref: 'user',
+    required: true,
+    select: false,
+  },
+  movieId: {
+    type: Number,
+    required: true,
+  },
   nameRU: {
     type: String,
     required: true,

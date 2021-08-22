@@ -1,12 +1,11 @@
-const Card = require('../models/card');
-const NoAccessError = require('../errors/forbidden-error');
+const Movie = require('../models/movie');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
 
-module.exports.getCards = (req, res, next) => {
-  Card.find({})
-    .then((cards) => {
-      res.send({ data: cards });
+module.exports.getMovies = (req, res, next) => {
+  Movie.find({})
+    .then((movies) => {
+      res.send({ data: movies });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -16,30 +15,44 @@ module.exports.getCards = (req, res, next) => {
     });
 };
 
-module.exports.createCard = (req, res, next) => {
-  const { name, link } = req.body;
+module.exports.createMovie = (req, res, next) => {
+  const { country, director, duration, year, description, image, trailer, nameRU, nameEN, thumbnail, movieId } = req.body;
   const owner = req.user._id;
-  Card.create({ name, link, owner })
-    .then((card) => res.status(200).send(card))
+  Movie.create({ country, director, duration, year, description, image, trailer, nameRU, nameEN, thumbnail, movieId, owner })
+    .then((movie) => res.status(200).send({
+      _id: movie._id,
+      country: movie.country,
+      director: movie.director,
+      duration: movie.duration,
+      year: movie.year,
+      description: movie.description,
+      image: movie.image,
+      trailer: movie.trailer,
+      nameRU: movie.nameRU,
+      nameEN: movie.nameEN,
+      thumbnail: movie.thumbnail,
+      movieId: movie.movieId,
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Вы не правильно заполнили обязательные поля'));
       }
       return next(err);
-    });
+    })
+    .catch(next);
 };
-
-module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.params.cardId)
+/**
+module.exports.deleteMovie = (req, res, next) => {
+  Movie.findById(req.params.movieId).select('+owner')
     .orFail(new Error('NotValidId'))
     // eslint-disable-next-line consistent-return
-    .then((card) => {
-      if (card.owner.toString() !== req.user._id) {
+    .then((movie) => {
+      if (movie.owner.toString() !== req.user._id) {
         return Promise.reject(new NoAccessError('Невозможно удалить чужую карточку'));
       }
-      Card.deleteOne({ _id: card._id })
+      movie.deleteOne({ _id: movie._id })
         .then(() => {
-          res.status(200).send({ card });
+          res.status(200).send({ movie });
         })
         .catch(next);
     })
@@ -54,20 +67,18 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .catch(next);
 };
-module.exports.likeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .orFail(new NotFoundError('Карточка с указанным _id не найдена.'))
-    .then((card) => {
-      res.status(200).send({ card });
-    })
-    .catch(next);
-};
+ */
+module.exports.deleteMovie = (req, res, next) => {
+  Movie.findById(req.params.movieId).select('+owner')
+    .then((movie) => {
+      if (!movie) {
+        throw new NotFoundError('Карточка с указанным _id не найдена.');
+      } else if (movie.owner.toString() !== req.user._id) {
+        throw new BadRequestError('Переданы некорректные данные.');
+      }
 
-module.exports.dislikeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .orFail(new NotFoundError('Карточка с указанным _id не найдена.'))
-    .then((card) => {
-      res.status(200).send({ card });
+      Movie.findByIdAndDelete(req.params.movieId).select('-owner')
+        .then((deletedMovie) => res.status(200).send(deletedMovie));
     })
     .catch(next);
 };

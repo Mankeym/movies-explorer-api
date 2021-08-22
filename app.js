@@ -1,12 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { celebrate, Joi, errors } = require('celebrate');
+
 const bodyParser = require('body-parser');
 const userRouter = require('./routes/users');
 const movieRouter = require('./routes/movies');
 const { login, createUser } = require('./controllers/users');
 
-const { PORT = 3011 } = process.env;
+const { PORT = 3020 } = process.env;
 const app = express();
 const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHadler');
@@ -28,8 +29,8 @@ app.post('/signup', celebrate({
 }), createUser);
 
 app.use(auth);
-app.use('/users', userRouter);
-app.use('/movies', movieRouter);
+app.use('/', userRouter);
+app.use('/', movieRouter);
 
 app.use('*', (req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });

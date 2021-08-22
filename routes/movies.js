@@ -2,15 +2,33 @@ const moviesRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
 const {
-  getCards, deleteCard, likeCard, dislikeCard, createCard,
+  getMovies, createMovie, deleteMovie
 } = require('../controllers/movies');
 
 
 moviesRouter.get('/movies', getMovies);
 
-moviesRouter.post('/movies', createMovie);
+moviesRouter.post('/movies', celebrate({
+  body: Joi.object().keys({
+    country: Joi.string().required(),
+    director: Joi.string().required(),
+    duration: Joi.number().required(),
+    year: Joi.string().required(),
+    description: Joi.string().required(),
+    image: Joi.string().required().pattern(new RegExp(/^(https?:\/\/)(www\.)?[\w-]+(\.[a-z])+[\w~!@#$%&*()-+=:;\\'",.?/]+#?/i)),
+    trailer: Joi.string().required().pattern(new RegExp(/^(https?:\/\/)(www\.)?[\w-]+(\.[a-z])+[\w~!@#$%&*()-+=:;\\'",.?/]+#?/i)),
+    thumbnail: Joi.string().required().pattern(new RegExp(/^(https?:\/\/)(www\.)?[\w-]+(\.[a-z])+[\w~!@#$%&*()-+=:;\\'",.?/]+#?/i)),
+    movieId: Joi.number().required(),
+    nameRU: Joi.string().required(),
+    nameEN: Joi.string().required(),
+  }),
+}), createMovie);
 
-moviesRouter.delete('/movies/:movieId', deleteMovie);
+moviesRouter.delete('/movies/:movieId', celebrate({
+  params: Joi.object().keys({
+    movieId: Joi.string().required().length(24).hex(),
+  }),
+}), deleteMovie);
 
 
 
