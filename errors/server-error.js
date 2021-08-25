@@ -5,4 +5,5 @@ class ServerError extends Error {
   }
 }
 
+// eslint-disable-next-line no-undef
 module.exports = ServerError;

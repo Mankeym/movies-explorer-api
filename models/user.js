@@ -1,6 +1,10 @@
+// eslint-disable-next-line no-unused-vars,no-undef
 const { isEmail, isURL } = require('validator');
+// eslint-disable-next-line no-undef
 const mongoose = require('mongoose');
+// eslint-disable-next-line no-undef
 const bcrypt = require('bcryptjs');
+// eslint-disable-next-line no-undef
 const NoAuthorizationError = require('../errors/no-authorization');
 
 const { Schema } = mongoose;
@@ -45,4 +49,5 @@ User.statics.findUserByCredentials = function (email, password) {
     });
 };
 
+// eslint-disable-next-line no-undef
 module.exports = mongoose.model('user', User);

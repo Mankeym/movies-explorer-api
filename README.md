@@ -1,4 +1,4 @@
-# Проект Mesto фронтенд + бэкенд
+# Бэкенд для дипломной работы 
 
 ## Директории
 
@@ -12,3 +12,6 @@
 
 `npm run start` — запускает сервер   
 `npm run dev` — запускает сервер с hot-reload
+
+## Сcылка 
+` https://diplom.prakticum.api.nomoredomains.club/

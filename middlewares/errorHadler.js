@@ -6,4 +6,5 @@ const errorHandler = (err, req, res, next) => {
   next(err);
 };
 
+// eslint-disable-next-line no-undef
 module.exports = errorHandler;

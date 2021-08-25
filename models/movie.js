@@ -1,4 +1,6 @@
+// eslint-disable-next-line no-undef
 const mongoose = require('mongoose');
+// eslint-disable-next-line no-undef
 const { isURL } = require('validator');
 
 const { Schema } = mongoose;
@@ -63,4 +65,5 @@ const Movies = new Schema({
     required: true,
   },
 });
+// eslint-disable-next-line no-undef
 module.exports = mongoose.model('movie', Movies);

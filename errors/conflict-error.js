@@ -5,4 +5,5 @@ class ConflictError extends Error {
   }
 }
 
+// eslint-disable-next-line no-undef
 module.exports = ConflictError;

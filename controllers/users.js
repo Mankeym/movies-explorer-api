@@ -1,14 +1,18 @@
+// eslint-disable-next-line no-undef
 const bcrypt = require('bcryptjs');
+// eslint-disable-next-line no-undef
 const jwt = require('jsonwebtoken');
 
+// eslint-disable-next-line no-undef
 const NotFoundError = require('../errors/not-found-error');
+// eslint-disable-next-line no-undef
 const BadRequestError = require('../errors/bad-request-error');
+// eslint-disable-next-line no-undef
 const ConflictError = require('../errors/conflict-error');
-
-// eslint-disable-next-line import/no-dynamic-require
-
+// eslint-disable-next-line no-undef
 const User = require('../models/user');
 
+// eslint-disable-next-line no-undef
 module.exports.getUsers = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
@@ -26,6 +30,7 @@ module.exports.getUsers = (req, res, next) => {
     })
     .catch(next);
 };
+// eslint-disable-next-line no-undef
 module.exports.createUser = (req, res, next) => {
   const {
     email, password, name,
@@ -56,6 +61,7 @@ module.exports.createUser = (req, res, next) => {
       }))
     .catch(next);
 };
+// eslint-disable-next-line no-undef
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
@@ -66,6 +72,7 @@ module.exports.login = (req, res, next) => {
     })
     .catch(next);
 };
+// eslint-disable-next-line no-undef
 module.exports.updateProfile = (req, res, next) => {
   const { name, email } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })

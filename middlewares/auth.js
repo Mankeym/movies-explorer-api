@@ -1,6 +1,7 @@
+// eslint-disable-next-line no-undef
 const jwt = require('jsonwebtoken');
 
-// eslint-disable-next-line consistent-return
+// eslint-disable-next-line consistent-return,no-undef
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer ')) {
