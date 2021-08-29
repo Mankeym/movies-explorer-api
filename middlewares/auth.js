@@ -1,13 +1,12 @@
-// eslint-disable-next-line no-undef
 const jwt = require('jsonwebtoken');
+const NoAuthorizationError = require('../errors/no-authorization');
 
-// eslint-disable-next-line consistent-return,no-undef
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer ')) {
     return res
       .status(401)
-      .send({ message: 'Необходима авторизация' });
+      .send(new NoAuthorizationError('Необходима авторизация'));
   }
   const token = authorization.replace('Bearer ', '');
 
@@ -18,9 +17,9 @@ module.exports = (req, res, next) => {
   } catch (err) {
     return res
       .status(401)
-      .send({ message: 'Необходима авторизация' });
+      .send(new NoAuthorizationError('Необходима авторизация'));
   }
   req.user = payload;
 
-  next();
+  return next();
 };

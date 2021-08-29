@@ -1,13 +1,9 @@
-// eslint-disable-next-line no-undef
 const moviesRouter = require('express').Router();
-// eslint-disable-next-line no-undef
 const { celebrate, Joi } = require('celebrate');
 
 const {
-  getMovies, createMovie, deleteMovie
-// eslint-disable-next-line no-undef
+  getMovies, createMovie, deleteMovie,
 } = require('../controllers/movies');
-
 
 moviesRouter.get('/movies', getMovies);
 
@@ -33,5 +29,4 @@ moviesRouter.delete('/movies/:movieId', celebrate({
   }),
 }), deleteMovie);
 
-// eslint-disable-next-line no-undef
 module.exports = moviesRouter;

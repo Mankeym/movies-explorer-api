@@ -5,5 +5,4 @@ class NoAuthorizationError extends Error {
   }
 }
 
-// eslint-disable-next-line no-undef
 module.exports = NoAuthorizationError;

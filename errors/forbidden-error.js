@@ -5,5 +5,4 @@ class NoAccessError extends Error {
   }
 }
 
-// eslint-disable-next-line no-undef
 module.exports = NoAccessError;

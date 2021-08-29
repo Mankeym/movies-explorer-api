@@ -1,11 +1,9 @@
-// eslint-disable-next-line no-undef
 const Movie = require('../models/movie');
-// eslint-disable-next-line no-undef
+
 const NotFoundError = require('../errors/not-found-error');
-// eslint-disable-next-line no-undef
+
 const BadRequestError = require('../errors/bad-request-error');
 
-// eslint-disable-next-line no-undef
 module.exports.getMovies = (req, res, next) => {
   Movie.find({})
     .then((movies) => {
@@ -19,14 +17,47 @@ module.exports.getMovies = (req, res, next) => {
     });
 };
 
-// eslint-disable-next-line no-undef
 module.exports.createMovie = (req, res, next) => {
-  const { country, director, duration, year, description, image, trailer, nameRU, nameEN, thumbnail, movieId } = req.body;
+  const {
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailer,
+    nameRU,
+    nameEN,
+    thumbnail,
+    movieId,
+  } = req.body;
   const owner = req.user._id;
-  Movie.create({ country, director, duration, year, description, image, trailer, nameRU, nameEN, thumbnail, movieId, owner })
-    // eslint-disable-next-line no-unused-vars
-    .then((movie) => res.status(200).send({
-      country, director, duration, year, description, image, trailer, nameRU, nameEN, thumbnail, movieId
+  Movie.create({
+    country,
+    director,
+    duration,
+    year,
+    description,
+    image,
+    trailer,
+    nameRU,
+    nameEN,
+    thumbnail,
+    movieId,
+    owner,
+  })
+    .then(() => res.status(200).send({
+      country,
+      director,
+      duration,
+      year,
+      description,
+      image,
+      trailer,
+      nameRU,
+      nameEN,
+      thumbnail,
+      movieId,
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -37,7 +68,6 @@ module.exports.createMovie = (req, res, next) => {
     .catch(next);
 };
 
-// eslint-disable-next-line no-undef
 module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params.movieId).select('+owner')
     .then((movie) => {
@@ -48,7 +78,12 @@ module.exports.deleteMovie = (req, res, next) => {
       }
 
       Movie.findByIdAndDelete(req.params.movieId).select('-owner')
-        .then((deletedMovie) => res.status(200).send(deletedMovie));
-    })
-    .catch(next);
+        .then((deletedMovie) => res.status(200).send(deletedMovie))
+        .catch((err) => {
+          if (err.kind === 'ObjectId') {
+            next(new BadRequestError('Невалидный id'));
+          }
+          return next(err);
+        });
+    });
 };
