@@ -73,9 +73,14 @@ module.exports.updateProfile = (req, res, next) => {
       res.status(200).send({ user });
     })
     .catch((err) => {
-      if (!name || !email) {
-        return next(new ConflictError('Вы не правильно заполнили обязательные поля'));
+      if (err.name === 'ValidationError') {
+        throw new BadRequestError('Введены невалидные данные');
+      } else if (err.name === 'CastError') {
+        throw new BadRequestError('Введен невалидный id пользователя');
+      } else if (err.codeName === 'DuplicateKey') {
+        throw new ConflictError('Вы не правильно заполнили обязательные поля');
       }
       return next(err);
-    });
+    })
+    .catch(next);
 };

@@ -28,18 +28,20 @@ const User = new Schema({
   },
 });
 
-User.statics.findUserByCredentials = (email, password) => this.findOne({ email }).select('+password')
-  .then((user) => {
-    if (!user) {
-      throw new NoAuthorizationError('Неправильные почта или пароль');
-    }
-    return bcrypt.compare(password, user.password)
-      .then((matched) => {
-        if (!matched) {
-          throw new NoAuthorizationError('Неправильные почта или пароль');
-        }
-        return user; // теперь user доступен
-      });
-  });
+User.statics.findUserByCredentials = function findUser(email, password) {
+  return this.findOne({ email }).select('+password')
+    .then((user) => {
+      if (!user) {
+        throw new NoAuthorizationError('Неправильные почта или пароль');
+      }
 
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            throw new NoAuthorizationError('Неправильные почта или пароль');
+          }
+          return user; // теперь user доступен
+        });
+    });
+};
 module.exports = mongoose.model('user', User);
