@@ -7,6 +7,8 @@ const userRouter = require('./routes/users');
 const movieRouter = require('./routes/movies');
 const authRouter = require('./routes/auth');
 
+
+const { PORT = 3041 } = process.env;
 const { DATA_BASE, NODE_ENV } = process.env;
 const app = express();
 const auth = require('./middlewares/auth');
@@ -24,11 +26,15 @@ const { PORT = 3050 } = process.env;
 const options = {
   origin: [
     'http://localhost:3000',
-  ]
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization', 'Accept'],
+  credentials: true,
 };
 
-app.use(cors());
-app.options("*", cors());
+app.use(cors());;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
