@@ -2,10 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const userRouter = require('./routes/users');
 const movieRouter = require('./routes/movies');
 const authRouter = require('./routes/auth');
 
+<<<<<<< HEAD
 const { PORT = 3041 } = process.env;
 const { DATA_BASE, NODE_ENV } = process.env;
 const app = express();
@@ -19,6 +21,10 @@ mongoose.connect(NODE_ENV === 'production' ? DATA_BASE : 'mongodb://localhost:27
   useCreateIndex: true,
   useFindAndModify: false,
 });
+=======
+const { PORT = 3050 } = process.env;
+
+>>>>>>> b8d2e0439e40af5306c5898d828b27eae38b4ad6
 const options = {
   origin: [
     'http://localhost:3000',
@@ -34,6 +40,7 @@ app.use('*', cors(options));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
+
 app.use('/', authRouter);
 
 app.use(auth);
