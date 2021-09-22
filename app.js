@@ -7,13 +7,10 @@ const userRouter = require('./routes/users');
 const movieRouter = require('./routes/movies');
 const authRouter = require('./routes/auth');
 
-
-const { PORT = 3041 } = process.env;
 const { DATA_BASE, NODE_ENV } = process.env;
 const app = express();
 const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHadler');
-const cors = require("cors");
 const { errorLogger, requestLogger } = require('./middlewares/logger');
 
 mongoose.connect(NODE_ENV === 'production' ? DATA_BASE : 'mongodb://localhost:27017/bitfilmsdb', {
