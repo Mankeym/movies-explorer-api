@@ -1,5 +1,5 @@
+const mongoose = require('mongoose');
 const Movie = require('../models/movie');
-
 const NotFoundError = require('../errors/not-found-error');
 
 const BadRequestError = require('../errors/bad-request-error');
@@ -31,7 +31,7 @@ module.exports.createMovie = (req, res, next) => {
     thumbnail,
     movieId,
   } = req.body;
-  const owner = req.user._id;
+  const owner = new mongoose.Types.ObjectId(req.user._id);
   Movie.create({
     country,
     director,
@@ -58,6 +58,7 @@ module.exports.createMovie = (req, res, next) => {
       nameEN,
       thumbnail,
       movieId,
+      owner,
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
