@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const userRouter = require('./routes/users');
 const movieRouter = require('./routes/movies');
 const authRouter = require('./routes/auth');
@@ -19,16 +18,14 @@ mongoose.connect(NODE_ENV === 'production' ? DATA_BASE : 'mongodb://localhost:27
   useFindAndModify: false,
 });
 const { PORT = 3050 } = process.env;
-
-app.use(cors());
-/**
 const allowedCors = [
   'http://diplom.prakticum.api.nomoredomains.club/',
   'https://diplom.prakticum.api.nomoredomains.club/',
   'localhost:3000',
 ];
 
- app.use((req, res, next) => {
+// eslint-disable-next-line consistent-return
+app.use((req, res, next) => {
   const { origin } = req.headers; // Сохраняем источник запроса в переменную origin
   // проверяем, что источник запроса есть среди разрешённых
   if (allowedCors.includes(origin)) {
@@ -53,7 +50,8 @@ const allowedCors = [
     return res.end();
   }
   next();
-}); */ app.use(bodyParser.json());
+});
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
 
