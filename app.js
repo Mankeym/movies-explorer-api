@@ -21,7 +21,7 @@ const { PORT = 3050 } = process.env;
 const allowedCors = [
   'http://diplom.prakticum.api.nomoredomains.club/',
   'https://diplom.prakticum.api.nomoredomains.club/',
-  'localhost:3000',
+  'http://localhost:3000/',
 ];
 
 // eslint-disable-next-line consistent-return
