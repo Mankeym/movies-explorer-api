@@ -19,9 +19,7 @@ mongoose.connect(NODE_ENV === 'production' ? DATA_BASE : 'mongodb://localhost:27
 });
 const { PORT = 3050 } = process.env;
 const allowedCors = [
-  'http://diplom.prakticum.api.nomoredomains.club/',
-  'https://diplom.prakticum.api.nomoredomains.club/',
-  'http://localhost:3000/',
+  'http://localhost:3000',
 ];
 
 // eslint-disable-next-line consistent-return
