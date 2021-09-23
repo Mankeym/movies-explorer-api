@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const userRouter = require('./routes/users');
 const movieRouter = require('./routes/movies');
 const authRouter = require('./routes/auth');
@@ -20,19 +19,38 @@ mongoose.connect(NODE_ENV === 'production' ? DATA_BASE : 'mongodb://localhost:27
 });
 const { PORT = 3050 } = process.env;
 
-const options = {
-  origin: [
-    'http://localhost:3000',
-  ],
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-  allowedHeaders: ['Content-Type', 'origin', 'Authorization', 'Accept'],
-  credentials: true,
-};
+const allowedCors = [
+  'http://diplom.prakticum.api.nomoredomains.club/',
+  'https://diplom.prakticum.api.nomoredomains.club/',
+  'localhost:3000',
+];
 
-app.use(cors(options));;
-app.use(bodyParser.json());
+app.use((req, res, next) => {
+  const { origin } = req.headers; // Сохраняем источник запроса в переменную origin
+  // проверяем, что источник запроса есть среди разрешённых
+  if (allowedCors.includes(origin)) {
+    // устанавливаем заголовок, который разрешает браузеру запросы с этого источника
+    res.header('Access-Control-Allow-Origin', '*');
+  }
+  const { method } = req; // Сохраняем тип запроса (HTTP-метод) в соответствующую переменную
+
+  // Значение для заголовка Access-Control-Allow-Methods по умолчанию (разрешены все типы запросов)
+  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
+
+  // Если это предварительный запрос, добавляем нужные заголовки
+  if (method === 'OPTIONS') {
+    // разрешаем кросс-доменные запросы любых типов (по умолчанию)
+    res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
+  }
+  const requestHeaders = req.headers['access-control-request-headers'];
+  if (method === 'OPTIONS') {
+    // разрешаем кросс-доменные запросы с этими заголовками
+    res.header('Access-Control-Allow-Headers', requestHeaders);
+    // завершаем обработку запроса и возвращаем результат клиенту
+    return res.end();
+  }
+  next();
+}); app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
 
