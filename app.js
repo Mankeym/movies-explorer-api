@@ -17,7 +17,7 @@ mongoose.connect(NODE_ENV === 'production' ? DATA_BASE : 'mongodb://localhost:27
   useCreateIndex: true,
   useFindAndModify: false,
 });
-const { PORT = 3050 } = process.env;
+const { PORT = 3051 } = process.env;
 const allowedCors = [
   'http://localhost:3000',
 ];
